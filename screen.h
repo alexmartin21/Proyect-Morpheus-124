@@ -1,12 +1,13 @@
-/** 
- * @brief It defines a screen
- * 
- * @file screen.h
- * @author Profesores PPROG
- * @version 1.0 
- * @date 11-01-2017
- * @copyright GNU Public License
- */
+/**
+*@brief It defines a screen
+*
+*
+*@file screen.h
+*@author FJNR & AMH
+*@version 1.0
+*@date 04/02/2018
+*@copyright GNU Public License
+*/
 
 #ifndef __SCREEN__
 #define __SCREEN__
