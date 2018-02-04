@@ -1,12 +1,42 @@
+/** 
+ * @brief It defines a textual graphic engine
+ * 
+ * @file graphic_engine.c
+ *@author FJNR & AMH
+ * @version 1.0 
+ *@date 05/02/2018
+ * @copyright GNU Public License
+ */
+ 
 #include <stdlib.h>
 #include <stdio.h>
 #include "screen.h"
 #include "graphic_engine.h"
+/**                 Definidos en:
+                        ||
+                        ||
+                        V
+WORD_SIZE = 1000 <==types.h
+MAX_SPACES = 100 <==space.h
+FIRST_SPACE = 1 <==space.h
+NO_ID = -1 <==types.h
+NO_CMD = -1 <==command.h
+UNKNOWN = 0 <==command.h
+EXIT = 1 <==command.h
+FOLLOWING = 2 <==command.h
+PREVIOUS = 3 <==command.h
+SCREEN_MAX_STR = 80 <==screen.h
+P.F.: Private Function
+*/
 
 struct _Graphic_engine{
   Area *map, *descript, *banner, *help, *feedback;
 };
-
+/**
+GRAPHIC ENGINE CONSTRUCTOR: Utilizando funciones del módulo screen se generan unos puntos en la pantalla 
+(x,y,width,height) todo ello en la pantalla generalizada que es screen_init (se reserva memoria dinamica para "ge" que es un
+puntero declarado en esta misma funcion), se devolverá ese mismo puntero.
+*/
 Graphic_engine *graphic_engine_create(){
   static Graphic_engine *ge = NULL;
 
@@ -25,6 +55,10 @@ Graphic_engine *graphic_engine_create(){
   return ge;
 }
 
+/**
+GRAPHIC ENGINE DESTRUCTOR: Es el encargado de llamar a todas las funciones DESTRUCTOR, para acabar liberando la memoria dinámica reservada en el GRAPHIC ENGINE CONSTRUCTOR
+*/
+
 void graphic_engine_destroy(Graphic_engine *ge){
   if (!ge)
     return;
@@ -38,7 +72,11 @@ void graphic_engine_destroy(Graphic_engine *ge){
   screen_destroy();
   free(ge);
 }
-
+/**
+GRAPHIC ENGINE PINTOR: Utilizando funciones del módulo screen se generan unos puntos en la pantalla 
+(x,y,width,height) todo ello en la pantall generalizada que es screen_init (se reserva memoria dinamicapara ge que es un
+puntero declarado en esta misma funcion) y se devolvera ese mismo puntero.
+*/
 void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   Id id_act = NO_ID, id_back = NO_ID, id_next = NO_ID, obj_loc = NO_ID;
   Space* space_act = NULL;
@@ -130,3 +168,4 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   screen_paint();
   printf("prompt:> ");
 }
+
