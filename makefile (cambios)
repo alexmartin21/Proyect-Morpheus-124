@@ -1,0 +1,17 @@
+
+
+los exes por si acaso
+
+
+command_exe:$(OBJECTSCOMMAND)
+	$(CC) $(CFLAGS) -o command_exe $(OBJECTSCOMMAND)
+juego_fin_exe:$(OBJECTSGALOOP)
+  	$(CC) $(CFLAGS) -o game_loop_exe $(OBJECTSGALOOP)
+game_exe: $(OBJECTSGAME)
+    	$(CC) $(CFLAGS) -o game_exe $(OBJECTSGAME)
+graphic_engine_exe:$(OBJECTSGRAPHIC)
+      	$(CC) $(CFLAGS) -o  graphic_engine_exe $(OBJECTSGRAPHIC)
+screen_exe:$(OBJECTSSCREEN)
+        	$(CC) $(CFLAGS) -o screen_exe
+space_exe: $(OBJECTSSPACE)
+          	$(CC) $(CFLAGS) -o space_exe
