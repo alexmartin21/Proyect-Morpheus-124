@@ -19,8 +19,8 @@
 /**                 Definidos en:
                         ||
                         ||
-                        V                        
-WORD_SIZE = 1000 <==types.h 
+                        V
+WORD_SIZE = 1000 <==types.h
 MAX_SPACES = 100 <==space.h
 FIRST_SPACE = 1 <==space.h
 NO_ID = -1 <==types.h
@@ -29,6 +29,7 @@ UNKNOWN = 0 <==command.h
 EXIT = 1 <==command.h
 FOLLOWING = 2 <==command.h
 PREVIOUS = 3 <==command.h
+P. F.: Private Function
 */
 
 /**
@@ -44,6 +45,11 @@ void game_callback_exit(Game* game);
 void game_callback_following(Game* game);
 void game_callback_previous(Game* game);
 
+/**
+Array de punteros a funciones
+static = unico en este modulo (evitar que se exponga) (cuidadin)
+
+*/
 static callback_fn game_callback_fn_list[N_CALLBACK]={
   game_callback_unknown,
   game_callback_exit,
@@ -56,6 +62,7 @@ static callback_fn game_callback_fn_list[N_CALLBACK]={
 
 STATUS game_load_spaces(Game* game, char* filename);
 STATUS game_add_space(Game* game, Space* space);
+/*P. F. */
 Id     game_get_space_id_at(Game* game, int position);
 STATUS game_set_player_location(Game* game, Id id);
 STATUS game_set_object_location(Game* game, Id id);
@@ -69,7 +76,7 @@ STATUS game_set_object_location(Game* game, Id id);
 STATUS game_create(Game* game) {
   int i;
 
-  for (i = 0; i < MAX_SPACES; i++) {/*Vacia el array spaces*/ 
+  for (i = 0; i < MAX_SPACES; i++) {/*Vacia el array spaces*/
     game->spaces[i] = NULL;
   }
 
@@ -113,7 +120,7 @@ STATUS game_destroy(Game* game) {
 }
 /**
    TAD (ESTADO): completa el array de space un espacio desde que esta vacio
-   -Si los argumentos estan vacios = ERROR 
+   -Si los argumentos estan vacios = ERROR
 */
 STATUS game_add_space(Game* game, Space* space) {
   int i = 0;
@@ -136,7 +143,7 @@ STATUS game_add_space(Game* game, Space* space) {
 }
 /**kajldfkjal;kdjf;lakjdfkajdlkfja;ldjf;lakjdflkjad;lfkja;ldkjfla;kjdf
    TAD (ID): completa el array de space un espacio desde que esta vacio
-   -Si los argumentos estan vacios = ERROR 
+   -Si los argumentos estan vacios = ERROR
 */
 
 Id game_get_space_id_at(Game* game, int position) {
@@ -149,7 +156,7 @@ Id game_get_space_id_at(Game* game, int position) {
 }
 /**
    TAD (GET): completa el array de space un espacio desde que esta vacio
-   -Si los argumentos estan vacios = ERROR 
+   -Si los argumentos estan vacios = ERROR
 */
 
 Space* game_get_space(Game* game, Id id){
@@ -171,7 +178,7 @@ Space* game_get_space(Game* game, Id id){
 /**
    SET PLAYER LOCATION: Comprueba el error comparando la macro y establece la posicion del jugador en el juego
 */
-
+/*P. F. */
 STATUS game_set_player_location(Game* game, Id id) {
 
   if (id == NO_ID) {
@@ -185,7 +192,7 @@ STATUS game_set_player_location(Game* game, Id id) {
 /**
    SET OBJECT LOCATION: Comprueba el error comprarando la macro y establece la posicion del objeto en el juego
 */
-
+/*P. F. */
 STATUS game_set_object_location(Game* game, Id id) {
 
   int i = 0;
@@ -234,7 +241,7 @@ T_Command game_get_last_command(Game* game){
 }
 
 /**
-   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object 
+   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object
 */
 
 void game_print_data(Game* game) {
@@ -265,7 +272,7 @@ BOOL game_is_over(Game* game) {
 */
 
 /**
-   
+
 */
 
 void game_callback_unknown(Game* game) {
@@ -326,7 +333,7 @@ void game_callback_previous(Game* game) {
     }
   }
 }
-
+/*P. F. */
 STATUS game_load_spaces(Game* game, char* filename) {
   FILE* file = NULL;
   char line[WORD_SIZE] = "";
