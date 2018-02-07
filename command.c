@@ -1,5 +1,5 @@
 /*
-*@brief Implementa los comandos 
+*@brief Implementa los comandos
 *
 *@file command.c
 *@author FJNR & AMH
@@ -13,7 +13,7 @@
 #include "command.h"
 
 /*
-Definimos 2 macros: 
+Definimos 2 macros:
 CMD_LENGHT para determinar el tamaño del array "input", de tipo char.
 N_CMD para determinar el tamaño de los punteros "cmd_to_str" y "short_cmd_to_str" a los array de tipo char.
 */
@@ -24,17 +24,21 @@ char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Exit", "Following", "Previo
 /*Ahora este puntero que lo compararemos también con el contenido de "input", para ver cual es el valor de "i", el entero que devuelve "srtcasecmp"*/
 char *short_cmd_to_str[N_CMD] = {"","","e","f","p"};
 
-/*Recoge el "input", y devuelve el "cmd", (mejor explicado en el fichero.h)*/
+/**
+* @brief Implementa los comandos, recogiendo el "input"
+* @param No param.
+* @return cmd (campo de estructura T_command)
+*/
 T_Command get_user_input(){
   T_Command cmd = NO_CMD;/*-1*/
   char input[CMD_LENGHT] = "";
   int i=UNKNOWN - NO_CMD + 1; /*2*/
-  
-  if (scanf("%s", input) > 0){    
+
+  if (scanf("%s", input) > 0){
     cmd = UNKNOWN; /*cmd=0 siempre*/
     while (cmd == UNKNOWN && i /*=2*/ < N_CMD /*=5*/){ /*UNKNOWN = 0 , N_CMD = 5*/
 /*
-La función "strcasecmp": 
+La función "strcasecmp":
 Compares two strings irrespective of the case of characters.
 Por ejemplo:
 int strcasecmp(const char *f1, const char *f2);
