@@ -1,7 +1,6 @@
 /*
 *@brief Carga de espacios (funcionalidad)
 *
-*
 *@file game_reader.c
 *@author FJNR & AMH
 *@version 1.0
@@ -9,41 +8,11 @@
 *@copyright GNU Public License
 */
 
-/***************************************************************
-/*
-Game juego;
-Game *pjuego;
-
-if (game_create(juego)==ERROR){
-/*Error al cargar el juego*//*
-  return ERROR;
-}
-else {
-  if(game_create_from_file(juego,data.dat)==ERROR){
-    return ERROR;
-  }
-  else {
-    game_print_screen(juego);
-    game_print_data(juego);
-  }
-}
-***************************************************************/
-
 #include <stdio.h>
 #include <string.h>
 #include "game_reader.h"
 #include "types.h"
 #include "game.h"
-
-/**
-typedef struct _Game{
-  Id player_location;
-  Id object_location;
-  Space* spaces[MAX_SPACES + 1];
-  T_Command last_cmd;
-} Game;
-*/
-
 /**                 Definidos en:
                         ||
                         ||
@@ -60,6 +29,12 @@ PREVIOUS = 3 <==command.h
 P. F.: Private Function
 */
 
+/*
+ * @brief funcionalidad de carga de espacios
+ * @param game, es el string destino, en el que se copia el puntero al string de tipo char, "toks"
+ * @param filename, puntero a char, que es el nombre del fichero que estamos accediendo
+ * @return status, OK O ERROR
+ */
 
 STATUS game_load_spaces(Game* game, char* filename) {
   FILE* file = NULL;
@@ -70,12 +45,10 @@ STATUS game_load_spaces(Game* game, char* filename) {
   Space* space = NULL;
   STATUS status = OK;
 
-  /*Comprueba que el nombre del fichero esta libre de error*/
   if (!filename) {
     return ERROR;
   }
 
- /*Comprueba que el fichero esta libre de error al abrirse*/
   file = fopen(filename, "r");
   if (file == NULL) {
     return ERROR;
@@ -104,25 +77,21 @@ STATUS game_load_spaces(Game* game, char* filename) {
       /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "id", y devuelve el valor convertido.
       Por lo tanto, "id" = valor convertido*/
       id = atol(toks);
-      /*Continua la partición en segmentos hasta que "strtok" es NULL*/
+      /*Continua la partición en segmentos hasta que "strtok" es NULL, en los demás casos también*/
       toks = strtok(NULL, "|");
-      /*Copiamos el array "toks en el destino "name*/
       strcpy(name, toks);
       toks = strtok(NULL, "|");
-      /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "north", y devuelve el valor convertido.
-      Por lo tanto, "north" = valor convertido*/
+      /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "north/east/south/west (Dependiendo de cada uno)", y devuelve el valor convertido.
+      Por lo tanto, "north/east/south/west (Dependiendo de cada uno)" = valor convertido*/
       north = atol(toks);
       toks = strtok(NULL, "|");
-      /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "east", y devuelve el valor convertido.
-      Por lo tanto, "east" = valor convertido*/
+
       east = atol(toks);
       toks = strtok(NULL, "|");
-      /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "south", y devuelve el valor convertido.
-      Por lo tanto, "south" = valor convertido*/
+
       south = atol(toks);
       toks = strtok(NULL, "|");
-      /*"atol" convierte la porción inicial de la cadena apuntada por "toks" a una representación de "west", y devuelve el valor convertido.
-      Por lo tanto, "west" = valor convertido*/
+
       west = atol(toks);
 
     #ifdef DEBUG /*Se ejecuta el código de dentro si debug está definido*/
@@ -150,8 +119,79 @@ STATUS game_load_spaces(Game* game, char* filename) {
   if (ferror(file)) {/*Se modifica el estado del código de error "int ferror (FILE* stream) " Devuelve un valor distinto de cero si se detectan errores*/
     status = ERROR;
   }
-  /*Se cierra el fichero*/
   fclose(file);
 
   return status;
+}
+/*
+ * @brief funcionalidad de añadir espacios
+ * @param game, puntero a estructura Game (direccion)
+ * @param space , puntero a estructura Space (direccion)
+ * @return status, OK O ERROR
+ */
+STATUS game_add_space(Game* game, Space* space) {
+  int i = 0;
+
+  if (space == NULL) {
+    return ERROR;
+  }
+
+  while ( (i < MAX_SPACES) && (game->spaces[i] != NULL)){
+    i++;
+  }
+
+  if (i >= MAX_SPACES) {
+    return ERROR;
+  }
+
+  game->spaces[i] = space;
+
+  return OK;
+}
+/*
+ * @brief funcionalidad leer el id de un espacio
+ * @param game, puntero a estructura,(direccion)
+ * @param position, posicion del espacio (en el array de punteros a Space)
+ * @return NO_ID (si la posicion se sale de limites), space_get_id (la posicion)
+ */
+Id game_get_space_id_at(Game* game, int position) {
+
+  if (position < 0 || position >= MAX_SPACES) {
+    return NO_ID;
+  }
+
+  return space_get_id(game->spaces[position]);
+}
+/*
+ * @brief funcionalidad de modificar la localizacion del jugador
+ * @param game, puntero a Game (direccion)
+ * @param id, que nos sirve para asginar el id de la nueva localizacion
+ * @return ERROR, en el caso de que lo hubiera
+ */
+STATUS game_set_player_location(Game* game, Id id) {
+
+  if (id == NO_ID) {
+    return ERROR;
+  }
+
+  game->player_location = id;
+
+}
+/*
+ * @brief funcionalidad de cambio de objetos de localizacion
+ * @param game,puntero a la estructura Game
+ * @param id, campo de la estructura Id
+ * @return status, OK O ERROR
+ */
+STATUS game_set_object_location(Game* game, Id id) {
+
+  int i = 0;
+
+  if (id == NO_ID) {
+    return ERROR;
+  }
+
+  game->object_location = id;
+
+  return OK;
 }
