@@ -36,7 +36,7 @@ P. F.: Private Function
  * @return status, OK O ERROR
  */
 
-STATUS game_load_spaces(Game* game, char* filename) {
+STATUS game_reader_load_spaces(Game* game, char* filename) {
   FILE* file = NULL;
   char line[WORD_SIZE] = "";
   char name[WORD_SIZE] = "";
@@ -122,76 +122,4 @@ STATUS game_load_spaces(Game* game, char* filename) {
   fclose(file);
 
   return status;
-}
-/*
- * @brief funcionalidad de añadir espacios
- * @param game, puntero a estructura Game (direccion)
- * @param space , puntero a estructura Space (direccion)
- * @return status, OK O ERROR
- */
-STATUS game_add_space(Game* game, Space* space) {
-  int i = 0;
-
-  if (space == NULL) {
-    return ERROR;
-  }
-
-  while ( (i < MAX_SPACES) && (game->spaces[i] != NULL)){
-    i++;
-  }
-
-  if (i >= MAX_SPACES) {
-    return ERROR;
-  }
-
-  game->spaces[i] = space;
-
-  return OK;
-}
-/*
- * @brief funcionalidad leer el id de un espacio
- * @param game, puntero a estructura,(direccion)
- * @param position, posicion del espacio (en el array de punteros a Space)
- * @return NO_ID (si la posicion se sale de limites), space_get_id (la posicion)
- */
-Id game_get_space_id_at(Game* game, int position) {
-
-  if (position < 0 || position >= MAX_SPACES) {
-    return NO_ID;
-  }
-
-  return space_get_id(game->spaces[position]);
-}
-/*
- * @brief funcionalidad de modificar la localizacion del jugador
- * @param game, puntero a Game (direccion)
- * @param id, que nos sirve para asginar el id de la nueva localizacion
- * @return ERROR, en el caso de que lo hubiera
- */
-STATUS game_set_player_location(Game* game, Id id) {
-
-  if (id == NO_ID) {
-    return ERROR;
-  }
-
-  game->player_location = id;
-
-}
-/*
- * @brief funcionalidad de cambio de objetos de localizacion
- * @param game,puntero a la estructura Game
- * @param id, campo de la estructura Id
- * @return status, OK O ERROR
- */
-STATUS game_set_object_location(Game* game, Id id) {
-
-  int i = 0;
-
-  if (id == NO_ID) {
-    return ERROR;
-  }
-
-  game->object_location = id;
-
-  return OK;
 }
