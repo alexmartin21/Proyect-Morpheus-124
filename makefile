@@ -4,7 +4,7 @@ CFLAGS= -g -Wall -pedantic -ansi
 MODULOS= juego_fin_exe
 #HAY QUE PONER MAS
 #########################################################
-OBJECTS = command.o game_loop.o game.o graphic_engine.o screen.o space.o s
+OBJECTS = command.o game_loop.o game.o graphic_engine.o screen.o space.o
 OBJECTSCOMMAND = command.o
 OBJECTSGALOOP = game_loop.o
 OBJECTSGAME = game.o
@@ -28,7 +28,8 @@ MEMORIES_TO_SUBMIT =*.pdf
 
 .PHONY: all
 all: $(MODULOS)
-
+#COMANDOS
+#MIRAR SI HAY QUE ELIMINARLO
 juego_fin_exe:$(OBJECTS)
 	$(CC) $(CFLAGS) -o game_loop_exe $(OBJECTS)
 game_loop.o:game_loop.c graphic_engine.h
@@ -36,21 +37,28 @@ game_loop.o:game_loop.c graphic_engine.h
 command.o:command.c command.h
 	$(CC) $(CFLAGS) -c command.c
 #MIRAR SI HAY QUE ELIMINARLO
-game.o: game.c game.h
+game.o: game.c game.h command.h space.h
 	$(CC) $(CFLAGS) -c game.c
 #MIRAR SI HAY QUE ELIMINARLO
-graphic_engine.o :graphic_engine.c graphic_engine.h screen.h
+graphic_engine.o :graphic_engine.c graphic_engine.h screen.h game.h
 	$(CC) $(CFLAGS) -c graphic_engine.c
 #MIRAR SI HAY QUE ELIMINARLO
 screen.o: screen.c screen.h
 	$(CC) $(CFLAGS) -c screen.c
 #MIRAR SI HAY QUE ELIMINARLO
+space.o: space.c space.h types.h
+	$(CC) $(CFLAGS) -c space.c
 
 
+#HAY DUDA GENERALIZADA CON LAS DEPENDENCIAS DE LOS ARCHIVOS .h
+
+.PHONY: valgrind
+valgrind:
+	valgrind ./game_loop_exe --args data.dat
 
 .PHONY: clear
 clear:
-	rm -rf *.o *.dSYM #borra los objetos
+	rm -rf $(OBJECTS_TO_CLEAN) *.dSYM #borra todos los objetos excepto el octaedro.o
 
 .PHONY: clean
 clean: clear
@@ -64,4 +72,4 @@ dist:
 	cp $(HEADERS_TO_SUBMIT) $(SOURCES_TO_SUBMIT) $(SUPPORT_TO_SUBMIT) $(MEMORIES_TO_SUBMIT) $(DIST_NAME)/  #se ponen en el directorio recien creado los archivos incluyendo pdfs
 	zip $(DIST_NAME).tar $(DIST_NAME)/* #Se genera el comprimido .tar con el directorio creado
 	rm -rf $(DIST_NAME)
-@echo "Estado:listo para enviar"
+	@echo "Estado:listo para enviar"
