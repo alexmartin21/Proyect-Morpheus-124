@@ -29,6 +29,7 @@ STATUS game_create(Game* game);
 CONTRUCTOR FROM FILE: Comprueba que el CONSTRUCTOR y el LOAD SPACES funcionan con éxito,
 de comprobar que no hay error con el fichero
 y de llamar a las funciones que establecen las posiciones del jugador y objeto
+devuelve OK, y si no funciona devuelve ERROR
 */
 STATUS game_create_from_file(Game* game, char* filename);
 /**
@@ -45,12 +46,12 @@ STATUS game_destroy(Game* game);
 BOOL   game_is_over(Game* game);
 void   game_print_screen(Game* game);
 /**
-   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object 
+   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object
 */
 void   game_print_data(Game* game);
 /**
    TAD (GET): completa el array de space un espacio desde que esta vacio
-   -Si los argumentos estan vacios = ERROR 
+   -Si los argumentos estan vacios = ERROR
 */
 Space* game_get_space(Game* game, Id id);
 /**
@@ -65,4 +66,12 @@ Id     game_get_object_location(Game* game);
    GET LAST COMMAND: Devuelve el CMD de "last_cmd" al puntero game, como argumento
 */
 T_Command game_get_last_command(Game* game);
+/*
+ * @brief funcionalidad de añadir espacios
+ * @param game, puntero a estructura Game (direccion)
+ * @param space , puntero a estructura Space (direccion)
+ * @return status, OK O ERROR
+ */
+STATUS game_add_space(Game* game, Space* space);
+
 #endif
