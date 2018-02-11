@@ -12,46 +12,30 @@
 #include <strings.h>
 #include "command.h"
 
-/*
-Definimos 2 macros:
-CMD_LENGHT para determinar el tamaño del array "input", de tipo char.
-N_CMD para determinar el tamaño de los punteros "cmd_to_str" y "short_cmd_to_str" a los array de tipo char.
-*/
 #define CMD_LENGHT 30
 #define N_CMD 5
-/*Declaramos este puntero a char, que será el que después se usará para comparalo con el contenido de "input"*/
-char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Exit", "Following", "Previous"};
-/*Ahora este puntero que lo compararemos también con el contenido de "input", para ver cual es el valor de "i", el entero que devuelve "srtcasecmp"*/
-char *short_cmd_to_str[N_CMD] = {"","","e","f","p"};
+
+/* Puntero a char, es una tabla de comandos que el jugador introduce por pantalla */
+char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Exit", "Following", "Previous,","Get","Drop"};
+/*Puntero a char, es una tabla de comandos que tendra que pulsar el jugador en la partida*/
+char *short_cmd_to_str[N_CMD] = {"","","e","f","p","g","d"};
 
 /**
-* @brief Implementa los comandos, recogiendo el "input"
+* @brief Implementa los comandos, recogiendo el "input" ,
+   transformándolo en un valor numérico de T_command;
 * @param No param.
 * @return cmd (campo de estructura T_command)
 */
 T_Command get_user_input(){
   T_Command cmd = NO_CMD;/*-1*/
-  char input[CMD_LENGHT] = "";
+  char input[CMD_LENGHT] = "";/*Variable "input" (string), leera el comando*/
   int i=UNKNOWN - NO_CMD + 1; /*2*/
 
-  if (scanf("%s", input) > 0){
-    cmd = UNKNOWN; /*cmd=0 siempre*/
-    while (cmd == UNKNOWN && i /*=2*/ < N_CMD /*=5*/){ /*UNKNOWN = 0 , N_CMD = 5*/
-/*
-La función "strcasecmp":
-Compares two strings irrespective of the case of characters.
-Por ejemplo:
-int strcasecmp(const char *f1, const char *f2);
-This function returns an integer i:
-i > 0, if lowercase(f1) is greater than lowercase(f2)
-i < 0, if lowercase(f1) is found less than string lowercase(f2)
-i = 0, if lowercase(f1) is equal to lowercase(f2).<=====ESTO ES LO QUE SE COMPRUEBA EN EL CONDICIONAL DE JUSTO DEBAJO
-*/
+  if (scanf("%s", input) > 0){/*Si lee el comando correctamente*/
+    cmd = UNKNOWN; /*cmd=0, siempre*/
+    while (cmd == UNKNOWN && i /*=2*/ < N_CMD /*=5*/){ /*Compara el comando introducido por el jugador con los de la lista*/
 
-/*IF <=== Si las cadenas son iguales ("input" y "short_cmd_to_str") el comando sera "e", de lo contrario se va sumando
-hasta llegar a la "p", es decir, i = 5;*/
-
-      if (!strcasecmp(input,short_cmd_to_str[i])){
+      if (!strcasecmp(input,short_cmd_to_str[i])){/*Si coinciden "cmd" = el valor que le correponde*/
         cmd = i /*=2*/ + NO_CMD/*=-1*/;
       }
       else{
@@ -59,6 +43,7 @@ hasta llegar a la "p", es decir, i = 5;*/
       }
     }
   }
-  /*Hay cuatro posibles cmd: "", "e", "f", "p" */
+  /*Hay cuatro posibles cmd: "", "e", "f", "p", "g", "d"*/
   return cmd;
 }
+
