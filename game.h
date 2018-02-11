@@ -1,4 +1,4 @@
-/*
+/**
 *@brief Define la interfaz del juego
 *
 *
@@ -21,57 +21,82 @@ typedef struct _Game{
   Space* spaces[MAX_SPACES + 1];
   T_Command last_cmd;
 } Game;
-/**
-CONSTRUCTOR: Comprueba si se puede puede crear el juego (devuelve OK si ha sido así, de lo contrario ERROR)
-*/
+/*
+ * @brief Inicialización de la estructura Game
+ * @param game, puntero a estructura Game (dirección)
+ * @return status, OK O ERROR
+ */
 STATUS game_create(Game* game);
-/**
-CONTRUCTOR FROM FILE: Comprueba que el CONSTRUCTOR y el LOAD SPACES funcionan con éxito,
-de comprobar que no hay error con el fichero
-y de llamar a las funciones que establecen las posiciones del jugador y objeto
-devuelve OK, y si no funciona devuelve ERROR
-*/
+/*
+ * @brief Crea el juego, carga las casillas (data.dat) y ponen el objeto y jugador
+    en la posición primera.
+ * @param game, puntero a estructura Game (dirección)
+ * @param filename, fichero de casillas (data.dat)
+ * @return status, OK O ERROR
+ */
 STATUS game_create_from_file(Game* game, char* filename);
 /**
-   GAME UPDATE: OOOOOOOOOOOOOOOOOOOOOOOOOOOJJJJJJJJJJJJJJJJJJJJJJOOOOOOOOOOOOOOOOOOOOOOOOO
-*/
+ * @brief Actualizacion de los comandos (muestra el último).
+ * @param game, puntero a la estructura Game
+ * @param cmd, enumeración (identificador de cada comando)
+ * @return status, OK O ERROR
+ */
 STATUS game_update(Game* game, T_Command cmd);
-/**
-   DESTRUCTOR: Destruye los espacios del array spaces (devuelve OK si ha sido así)
-*/
+/*
+ * @brief Elimina las casillas creadas en la función anterior
+ * @param game, puntero a estructura Game (dirección)
+ * @return status, OK O ERROR
+ */
 STATUS game_destroy(Game* game);
 /**
-   GAME OVER: Funcion BOOL que usaremos en otro fichero.c para el final del juego
-*/
-BOOL   game_is_over(Game* game);
-void   game_print_screen(Game* game);
+ * @brief Posible llamada a la finalización del juego
+ * @param game, puntero a la estructura Game
+ * @return bool, TRUE or FALSE
+ */
+BOOL game_is_over(Game* game);
+void game_print_screen(Game* game);
 /**
-   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object
-*/
-void   game_print_data(Game* game);
-/**
-   TAD (GET): completa el array de space un espacio desde que esta vacio
-   -Si los argumentos estan vacios = ERROR
-*/
+ * @brief Imprime la "info" de todas las casillas ,y la posición del jugador y
+    del objeto.
+ * @param game, puntero a la estructura Game
+ * @return nada
+ */
+void game_print_data(Game* game);
+/*
+ * @brief Retorna la casilla (asociándola con una posición predeterminada)
+    y con el id (param)
+ * @param game, puntero a estructura,(dirección)
+ * @param id, Entero (identificador)
+ * @return NULL (si el id esta corrupto, o al final de la función),
+    y el array "spaces", de la estructura, si coincide con el id pasado como argumento
+ */
 Space* game_get_space(Game* game, Id id);
 /**
-   SET PLAYER LOCATION: Comprueba el error comparando la macro y establece la posicion del jugador en el juego
-*/
-Id     game_get_player_location(Game* game);
+ * @brief Devuelve la posicion del jugador (estructura game)
+ * @param game, puntero a la estructura Game
+ * @return la posición del jugador, modificada de la estructura
+ */
+Id game_get_player_location(Game* game);
 /**
-   SET OBJECT LOCATION: Comprueba el error comprarando la macro y establece la posicion del objeto en el juego
-*/
-Id     game_get_object_location(Game* game);
+ * @brief Devuelve la posicion del objeto (estructura game)
+ * @param game, puntero a la estructura Game
+ * @return la posición del objeto, modificada de la estructura
+ */
+Id game_get_object_location(Game* game);
 /**
-   GET LAST COMMAND: Devuelve el CMD de "last_cmd" al puntero game, como argumento
-*/
+ * @brief Devuelve el último comando que se ha introducido.
+ * @param game, puntero a la estructura Game
+ * @return cmd, el último comando.
+ */
 T_Command game_get_last_command(Game* game);
 /*
- * @brief funcionalidad de añadir espacios
- * @param game, puntero a estructura Game (direccion)
- * @param space , puntero a estructura Space (direccion)
+ * @brief Crea una casilla una vez comprobado el array (hasta que apunte a NULL)
+    el espacio que se añade es el parámetro
+ * @param game, puntero a estructura Game (dirección)
+ * @param space , puntero a estructura Space (dirección)
  * @return status, OK O ERROR
  */
 STATUS game_add_space(Game* game, Space* space);
 
 #endif
+
