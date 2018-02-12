@@ -1,17 +1,18 @@
-/** 
- * @brief It defines a textual graphic engine
- * 
+/**
+ * @brief Define un motor gráfico
+ *
  * @file graphic_engine.c
  *@author FJNR & AMH
- * @version 1.0 
+ * @version 1.0
  *@date 05/02/2018
  * @copyright GNU Public License
  */
- 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "screen.h"
 #include "graphic_engine.h"
+
 /**                 Definidos en:
                         ||
                         ||
@@ -28,24 +29,33 @@ PREVIOUS = 3 <==command.h
 SCREEN_MAX_STR = 80 <==screen.h
 P.F.: Private Function
 */
-
+/*Estructura que define el Graphic_engine tamaño del area*/
 struct _Graphic_engine{
-  Area *map, *descript, *banner, *help, *feedback;
+  Area *map,
+       *descript,
+       *banner,
+       *help,
+       *feedback;
 };
-/**
-GRAPHIC ENGINE CONSTRUCTOR: Utilizando funciones del módulo screen se generan unos puntos en la pantalla 
-(x,y,width,height) todo ello en la pantalla generalizada que es screen_init (se reserva memoria dinamica para "ge" que es un
-puntero declarado en esta misma funcion), se devolverá ese mismo puntero.
-*/
+
+/*
+ * @brief Tiene la función de crear el área (se generan unos puntos en la
+    pantalla con: (x,y,width,height)) de los interfaces del juego
+    (inicializa la estructura de Graphic_engine)
+ * @param nada
+ * @return "ge", el puntero que contiene los elementos de la estructura
+    (punteros de tipo Area)
+ */
 Graphic_engine *graphic_engine_create(){
+  /*Conserva el valor (static)*/
   static Graphic_engine *ge = NULL;
 
   if (ge)
     return ge;
-  
+
   screen_init();
   ge = (Graphic_engine *) malloc(sizeof(Graphic_engine));
-  
+  /*Definicion de areas*/
   ge->map      = screen_area_init( 1, 1, 48, 13);
   ge->descript = screen_area_init(50, 1, 29, 13);
   ge->banner   = screen_area_init(28,15, 23,  1);
@@ -55,28 +65,33 @@ Graphic_engine *graphic_engine_create(){
   return ge;
 }
 
-/**
-GRAPHIC ENGINE DESTRUCTOR: Es el encargado de llamar a todas las funciones DESTRUCTOR, para acabar liberando la memoria dinámica reservada en el GRAPHIC ENGINE CONSTRUCTOR
-*/
-
+/*
+ * @brief Tiene la función de liberar la memoria de todos los campos de ge
+ * @param "ge", el puntero a "Graphic_engine"
+ * @return, ya que es una función de tipo void
+ */
 void graphic_engine_destroy(Graphic_engine *ge){
-  if (!ge)
+  if (!ge){
     return;
-  
+  }
+
   screen_area_destroy(ge->map);
   screen_area_destroy(ge->descript);
   screen_area_destroy(ge->banner);
   screen_area_destroy(ge->help);
   screen_area_destroy(ge->feedback);
-  
+
   screen_destroy();
   free(ge);
 }
-/**
-GRAPHIC ENGINE PINTOR: Utilizando funciones del módulo screen se generan unos puntos en la pantalla 
-(x,y,width,height) todo ello en la pantall generalizada que es screen_init (se reserva memoria dinamicapara ge que es un
-puntero declarado en esta misma funcion) y se devolvera ese mismo puntero.
-*/
+
+/*
+ * @brief Dibuja cada área en la pantalla de salida (se generan puntos en la
+    pantalla con: (x,y,width,height))
+ * @param "ge",  el puntero a "Graphic_engine"
+ * @param "game", el puntero a "Game"
+ * @return, ya que es una función de tipo void
+ */
 void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   Id id_act = NO_ID, id_back = NO_ID, id_next = NO_ID, obj_loc = NO_ID;
   Space* space_act = NULL;
@@ -84,20 +99,22 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   char str[255];
   T_Command last_cmd = UNKNOWN;
   extern char *cmd_to_str[];
-  
 
-  /* Paint the in the map area */
+  /*Dibuja el área de mapa*/
   screen_area_clear(ge->map);
   if ((id_act = game_get_player_location(game)) != NO_ID){
+    /* Obtiene la estructura de tipo Space para id_act (casilla actual),
+      y el id de las casillas anterior (id_back) y posterior (id_next) respecto
+      del jugador */
     space_act = game_get_space(game, id_act);
     id_back = space_get_north(space_act);
     id_next = space_get_south(space_act);
-      
-    if (game_get_object_location(game) == id_back) 
+
+    if (game_get_object_location(game) == id_back)
       obj='*';
-    else 
+    else
       obj=' ';
-    
+    /*Casilla anterior (efecto de refresco)*/
     if (id_back != NO_ID) {
       sprintf(str, "  |         %2d|",(int) id_back);
       screen_area_puts(ge->map, str);
@@ -108,12 +125,12 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       sprintf(str, "        ^");
       screen_area_puts(ge->map, str);
     }
-    
+
     if (game_get_object_location(game) == id_act)
       obj='*';
     else
       obj=' ';
-    
+    /*Casilla actual (efecto de refresco)*/
     if (id_act != NO_ID) {
       sprintf(str, "  +-----------+");
       screen_area_puts(ge->map, str);
@@ -124,12 +141,12 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       sprintf(str, "  +-----------+");
       screen_area_puts(ge->map, str);
     }
-    
+
     if (game_get_object_location(game) == id_next)
       obj='*';
     else
       obj=' ';
-    
+    /*Casilla siguiente (efecto de refresco)*/
     if (id_next != NO_ID) {
       sprintf(str, "        v");
       screen_area_puts(ge->map, str);
@@ -142,29 +159,29 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
     }
   }
 
-  /* Paint the in the description area */
+  /*Dibuja la zona descriptiva*/
   screen_area_clear(ge->descript);
   if ((obj_loc = game_get_object_location(game)) != NO_ID){
     sprintf(str, "  Object location:%d", (int)obj_loc);
     screen_area_puts(ge->descript, str);
   }
 
-  /* Paint the in the banner area */
+  /*Dibuja la zona del banner*/
   screen_area_puts(ge->banner, " The game of the Goose ");
 
-  /* Paint the in the help area */
+  /*Dibuja la zona de help*/
   screen_area_clear(ge->help);
   sprintf(str, " The commands you can use are:");
   screen_area_puts(ge->help, str);
   sprintf(str, "     following or f, previous or p, or exit or e");
   screen_area_puts(ge->help, str);
 
-  /* Paint the in the feedback area */
+  /*Dibuja el área de feedback*/
   last_cmd = game_get_last_command(game);
   sprintf(str, " %s", cmd_to_str[last_cmd-NO_CMD]);
   screen_area_puts(ge->feedback, str);
-  
-  /* Dump to the terminal */
+
+  /*Lo pasa al terminal*/
   screen_paint();
   printf("prompt:> ");
 }
