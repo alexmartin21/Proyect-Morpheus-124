@@ -13,7 +13,7 @@
 #include "command.h"
 
 #define CMD_LENGHT 30
-#define N_CMD 5
+#define N_CMD 7
 
 /* Puntero a char, es una tabla de comandos que el jugador introduce por pantalla */
 char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Exit", "Following", "Previous,","Get","Drop"};
