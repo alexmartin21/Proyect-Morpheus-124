@@ -1,10 +1,10 @@
 #####################################################
 CC=gcc
 CFLAGS= -g -Wall -pedantic -ansi
-MODULOS=command_exe game_loop_exe game_exe graphic_engine_exe screen_exe space_exe types_exe
+MODULOS= game_loop_exe 
 #HAY QUE PONER MAS
 #########################################################
-OBJECTS = command.o game_loop.o game.o graphic_engine.o screen.o space.o types.o
+OBJECTS = command.o game_loop.o game.o graphic_engine.o screen.o space.o 
 OBJECTSCOMMAND = command.o
 OBJECTSGALOOP = game_loop.o
 OBJECTSGAME = game.o
