@@ -1,4 +1,4 @@
-/*
+/**
 *@brief Implementa la interfaz del juego y todas las llamadas para cada comando
 *
 *
@@ -34,12 +34,12 @@ P. F.: Private Function
 */
 
 /**
-   Define the function type for the callbacks
+   Define el tipo de función para las llamadas a esta
 */
 typedef void (*callback_fn)(Game* game);
 
 /**
-   List of callbacks for each command in the game
+   Funciones de llamada para comando
 */
 void game_callback_unknown(Game* game);
 void game_callback_exit(Game* game);
@@ -54,21 +54,34 @@ static callback_fn game_callback_fn_list[N_CALLBACK]={
   game_callback_unknown,
   game_callback_exit,
   game_callback_following,
-  game_callback_previous};
+  game_callback_previous,
+  game_callback_get,
+  game_callback_drop
+};
+
 
 /**
    Funciones privadas, las cuales solo se ponen en el fichero.c
 */
+/*
+ * @brief Retorna el id de una casilla (asociándola con una posición predeterminada)
+ * @param game, puntero a estructura,(dirección)
+ * @param position, posición del espacio (en el array de punteros a Space)
+ * @return NO_ID (si la posicion se sale de los límites), y si no, space_get_id (la posición)
+ */
 Id     game_get_space_id_at(Game* game, int position);
+
 STATUS game_set_player_location(Game* game, Id id);
 STATUS game_set_object_location(Game* game, Id id);
 
-/**
-   Game interface implementation
-*/
-/**
-   CONSTRUCTOR: Comprueba si se puede puede crear el juego (devuelve OK si ha sido así, de lo contrario ERROR)
-*/
+
+ /*----------------------------------------------*/
+
+/*
+ * @brief Inicialización de la estructura Game
+ * @param game, puntero a estructura Game (dirección)
+ * @return status, OK O ERROR
+ */
 STATUS game_create(Game* game) {
   int i;
 
@@ -82,12 +95,14 @@ STATUS game_create(Game* game) {
 
   return OK;
 }
-/**
-CONTRUCTOR FROM FILE: Comprueba que el CONSTRUCTOR y el LOAD SPACES funcionan con éxito,
-de comprobar que no hay error con el fichero
-y de llamar a las funciones que establecen las posiciones del jugador y objeto
-*/
 
+/*
+ * @brief Crea el juego, carga las casillas (data.dat) y ponen el objeto y jugador
+    en la posición primera.
+ * @param game, puntero a estructura Game (dirección)
+ * @param filename, fichero de casillas (data.dat)
+ * @return status, OK O ERROR
+ */
 STATUS game_create_from_file(Game* game, char* filename) {
 
   if (game_create(game) == ERROR)
@@ -101,10 +116,11 @@ STATUS game_create_from_file(Game* game, char* filename) {
 
   return OK;
 }
-/**
-   DESTRUCTOR: Destruye los espacios del array spaces (devuelve OK si ha sido así)
-*/
-
+/*
+ * @brief Elimina las casillas creadas en la función anterior
+ * @param game, puntero a estructura Game (dirección)
+ * @return status, OK O ERROR
+ */
 STATUS game_destroy(Game* game) {
   int i = 0;
 
@@ -115,9 +131,10 @@ STATUS game_destroy(Game* game) {
   return OK;
 }
 /*
- * @brief funcionalidad de añadir espacios
- * @param game, puntero a estructura Game (direccion)
- * @param space , puntero a estructura Space (direccion)
+ * @brief Crea una casilla una vez comprobado el array (hasta que apunte a NULL)
+    el espacio que se añade es el parámetro
+ * @param game, puntero a estructura Game (dirección)
+ * @param space , puntero a estructura Space (dirección)
  * @return status, OK O ERROR
  */
 STATUS game_add_space(Game* game, Space* space) {
@@ -140,10 +157,10 @@ STATUS game_add_space(Game* game, Space* space) {
   return OK;
 }
 /*
- * @brief funcionalidad leer el id de un espacio
- * @param game, puntero a estructura,(direccion)
- * @param position, posicion del espacio (en el array de punteros a Space)
- * @return NO_ID (si la posicion se sale de limites), space_get_id (la posicion)
+ * @brief Retorna el id de una casilla (asociándola con una posición predeterminada)
+ * @param game, puntero a estructura,(dirección)
+ * @param position, posición del espacio (en el array de punteros a Space)
+ * @return NO_ID (si la posicion se sale de los límites), y si no, space_get_id (la posición)
  */
 Id game_get_space_id_at(Game* game, int position) {
 
@@ -153,6 +170,14 @@ Id game_get_space_id_at(Game* game, int position) {
 
   return space_get_id(game->spaces[position]);
 }
+/*
+ * @brief Retorna la casilla (asociándola con una posición predeterminada)
+    y con el id (param)
+ * @param game, puntero a estructura,(dirección)
+ * @param id, Entero (identificador)
+ * @return NULL (si el id esta corrupto, o al final de la función),
+    y el array "spaces", de la estructura, si coincide con el id pasado como argumento
+ */
 Space* game_get_space(Game* game, Id id){
   int i = 0;
 
@@ -168,11 +193,11 @@ Space* game_get_space(Game* game, Id id){
 
   return NULL;
 }
-/*
- * @brief funcionalidad de modificar la localizacion del jugador
- * @param game, puntero a Game (direccion)
- * @param id, que nos sirve para asginar el id de la nueva localizacion
- * @return ERROR, en el caso de que lo hubiera
+/**
+ * @brief funcionalidad de modificar la localizacion del jugador mediante el id
+ * @param game, puntero a Game (dirección)
+ * @param id, Entero de tipo Id (identificador)
+ * @return status, OK O ERROR
  */
 STATUS game_set_player_location(Game* game, Id id) {
 
@@ -181,10 +206,10 @@ STATUS game_set_player_location(Game* game, Id id) {
   }
 
   game->player_location = id;
-
+  return OK;
 }
-/*
- * @brief funcionalidad de cambio de objetos de localizacion
+/**
+ * @brief funcionalidad de modificar la localizacion del objeto mediante el id
  * @param game,puntero a la estructura Game
  * @param id, campo de la estructura Id
  * @return status, OK O ERROR
@@ -203,43 +228,48 @@ STATUS game_set_object_location(Game* game, Id id) {
 }
 
 /**
-   GET PLAYER LOCATION: Devuelve el ID de "player_location" al puntero game, como argumento
-*/
-
+ * @brief Devuelve la posicion del jugador (estructura game)
+ * @param game, puntero a la estructura Game
+ * @return la posición del jugador, modificada de la estructura
+ */
 Id game_get_player_location(Game* game) {
   return game->player_location;
 }
 
 /**
-   GET PLAYER LOCATION: Devuelve el ID de "object_location" al puntero game, como argumento
-*/
-
+ * @brief Devuelve la posicion del objeto (estructura game)
+ * @param game, puntero a la estructura Game
+ * @return la posición del objeto, modificada de la estructura
+ */
 Id game_get_object_location(Game* game) {
   return game->object_location;
 }
 
 /**
-   GAME UPDATE: OOOOOOOOOOOOOOOOOOOOOOOOOOOJJJJJJJJJJJJJJJJJJJJJJOOOOOOOOOOOOOOOOOOOOOOOOO
-*/
-
+ * @brief Actualizacion de los comandos (muestra el último).
+ * @param game, puntero a la estructura Game
+ * @param cmd, enumeración (identificador de cada comando)
+ * @return status, OK O ERROR
+ */
 STATUS game_update(Game* game, T_Command cmd) {
   game->last_cmd = cmd;
   (*game_callback_fn_list[cmd])(game);
   return OK;
 }
-
 /**
-   GET LAST COMMAND: Devuelve el CMD de "last_cmd" al puntero game, como argumento
-*/
-
+ * @brief Devuelve el último comando que se ha introducido.
+ * @param game, puntero a la estructura Game
+ * @return cmd, el último comando.
+ */
 T_Command game_get_last_command(Game* game){
   return game->last_cmd;
 }
-
 /**
-   IMPRIMIR DATOS: Se asegura del error del array "spaces" y imprime las localizaciones de player y object
-*/
-
+ * @brief Imprime la "info" de todas las casillas ,y la posición del jugador y
+    del objeto.
+ * @param game, puntero a la estructura Game
+ * @return nada
+ */
 void game_print_data(Game* game) {
   int i = 0;
 
@@ -254,51 +284,46 @@ void game_print_data(Game* game) {
   printf("=> Player location: %d\n", (int) game->player_location);
   printf("prompt:> ");
 }
-
 /**
-   GAME OVER: Funcion BOOL que usaremos en otro fichero.c para el final del juego
-*/
-
+ * @brief Posible llamada a la finalización del juego
+ * @param game, puntero a la estructura Game
+ * @return bool, TRUE or FALSE
+ */
 BOOL game_is_over(Game* game) {
   return FALSE;
 }
 
+/*----------------------------------------------*/
 /**
-   Callbacks implementation for each action
-*/
-
-/**
-
+   Callbacks : implementación para cada comando.
 */
 
 void game_callback_unknown(Game* game) {
 }
-
-/**
-
-*/
-
 void game_callback_exit(Game* game) {
 }
 
 /**
-
-*/
-
+ * @brief Implementa la función del comando following
+ * @param game, puntero a la estructura Game
+ * @return, ya que es una función de tipo void
+ */
 void game_callback_following(Game* game) {
   int i = 0;
   Id current_id = NO_ID;/*-1*/
-  Id space_id = NO_ID;
+  Id space_id = NO_ID;/*id del jugador*/
 
   space_id = game_get_player_location(game);
   if (space_id == NO_ID) {
     return;
   }
-
+  /*Recorre todos los espacios*/
   for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
     current_id = space_get_id(game->spaces[i]);
+
     if (current_id == space_id) {
       current_id = space_get_south(game->spaces[i]);
+
       if (current_id != NO_ID) {
 	       game_set_player_location(game, current_id);
       }
@@ -307,6 +332,11 @@ void game_callback_following(Game* game) {
   }
 }
 
+/**
+ * @brief Implementa la función del comando previous
+ * @param game, puntero a la estructura Game
+ * @return, ya que es una función de tipo void
+ */
 void game_callback_previous(Game* game) {
   int i = 0;
   Id current_id = NO_ID;
@@ -320,8 +350,10 @@ void game_callback_previous(Game* game) {
 
   for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
     current_id = space_get_id(game->spaces[i]);
+
     if (current_id == space_id) {
       current_id = space_get_north(game->spaces[i]);
+
       if (current_id != NO_ID) {
 	       game_set_player_location(game, current_id);
       }
@@ -329,3 +361,76 @@ void game_callback_previous(Game* game) {
     }
   }
 }
+
+/**
+ * @brief Implementa la función del comando get
+ * @param game, puntero a la estructura Game
+ * @return, ya que es una función de tipo void
+ */
+void game_callback_get(Game* game) {
+  int i = 0;
+  Id current_id = NO_ID;
+  Space *current_space = NULL;
+  Player *player = NULL;
+  Object *object = NULL;
+
+  current_id = game_get_player_location(game);
+
+  if (NO_ID == current_id) {
+    return;
+  }
+
+  current_space = game_get_space(game, current_id);
+
+  if (current_space == NULL){
+    return;
+  }
+
+  /* Si el jugador está en casilla con objeto,
+  lo coge (se le asigna) y desaparece de la casilla */
+  if (space_get_object(current_space) == TRUE){
+    /* TODO: Falta obtener el player y el objeto */
+    player_set_object(player, object);
+
+    /* Quitar de la casilla el objeto */
+    space_set_object(current_space, FALSE);
+    game->object_location = NO_ID;
+  }
+}
+
+/**
+ * @brief Implementa la función del comando drop
+ * @param game, puntero a la estructura Game
+ * @return, ya que es una función de tipo void
+ */
+void game_callback_drop(Game* game) {
+  int i = 0;
+  Id current_id = NO_ID;
+  Space *current_space = NULL;
+  Player *player = NULL;
+  Object *object = NULL;
+
+  current_id = game_get_player_location(game);
+
+  if (NO_ID == current_id) {
+    return;
+  }
+
+  current_space = game_get_space(game, current_id);
+
+  if (current_space == NULL){
+    return;
+  }
+
+  /* Si el jugador está en casilla sin objeto,
+  lo deja (se le asigna) y aparece en la casilla */
+  if (space_get_object(current_space) == FALSE){
+    /* Todo: Falta obtener el player y el objeto */
+    player_set_object(player, NULL);
+
+    /* Poner en la casilla el objeto */
+    space_set_object(current_space, TRUE);
+    game->object_location = current_id;
+  }
+}
+
