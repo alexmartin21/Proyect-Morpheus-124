@@ -15,7 +15,7 @@
 #include "game.h"
 #include "game_reader.h"
 
-#define N_CALLBACK 4
+#define N_CALLBACK 6
 
 /**                 Definidos en:
                         ||
