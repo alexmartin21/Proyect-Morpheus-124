@@ -42,6 +42,9 @@ PREVIOUS = 3 <==command.h
 SCREEN_MAX_STR = 80 <==screen.h
 P.F.: Private Function
 */
+
+/*Estructura que define la posición y tamaño de cada área ,y un puntero a char
+  (cursor) que sirve para una "linked list"*/
 struct _Area{
   int x, y, width, height;
   char *cursor;
@@ -50,43 +53,47 @@ struct _Area{
 char *__data;
 
 /****************************/
-/*     Private functions    */
+/*    Funciones Privadas   */
 /****************************/
 int  screen_area_cursor_is_out_of_bounds(Area* area);
 void screen_area_scroll_up(Area* area);
 void screen_utils_replaces_special_chars(char* str);
 
 /****************************/
-/* Functions implementation */
+/* Implementación de Funciones */
 /****************************/
-/**
-SCREEN CONSTRUCTOR: Reserva memoria dinamica ((ROWS *COLUMNS )+1)
-Funciones utilizadas : *memset(void *str, int c, size_t n) copia el caracter c a los primeros n
-caracteres de str ==>En este caso el numero que representa BG_CHAR en ASCII (126).
-*/
+
+/*
+ * @brief Reserva memoria dinámica para data y pone todos los caractes a BG_CHAR
+ * @param nada
+ * @return, nada ya que es una función de tipo void
+ */
 void screen_init(){
-  screen_destroy(); /* Dispose if previously initialized */
+  screen_destroy(); /* Eliminar si se inicializó previamente */
   __data = (char *) malloc(sizeof(char) * TOTAL_DATA);
 
   if (__data){
-    memset(__data, (int) BG_CHAR, TOTAL_DATA); /*Fill the background*/
-    *(__data + TOTAL_DATA - 1) = '\0';         /*NULL-terminated string*/
+    memset(__data, (int) BG_CHAR, TOTAL_DATA); /* Llena el fondo */
+    *(__data + TOTAL_DATA - 1) = '\0';/* Cadena terminada en -NULL*/
   }
 }
 
-/**
-SCREEN DESTRUCTOR: Libera la memoria de la variable "__data" con el condicional "__data != 0"
-*/
-
+/*
+ * @brief Libera memoria dinámica para "__data"
+ * @param nada
+ * @return, nada ya que es una función de tipo void
+ */
 void screen_destroy(){
   if (__data)
     free(__data);
 }
 
-/**
-SCREEN PAINT: Encargada de asociar los códigos de los colores guardados en el array "dest"
-*/
-
+/*
+ * @brief Colorea la pantalla de azul donde no hay interfaz
+    y de gris donde se desarrolla el juego.
+ * @param nada
+ * @return,nada ya que es una función de tipo void
+ */
 void screen_paint(){
   char *src = NULL;
   char dest[COLUMNS + 1];
@@ -95,73 +102,74 @@ void screen_paint(){
   memset(dest, 0, COLUMNS + 1);
 
   if (__data){
-    /* puts(__data); */ /*Dump data directly to the terminal*/
-    /*It works fine if the terminal window has the right size*/
-
-    puts("\033[2J"); /*Clear the terminal*/
+    /* pone (__data); */
+    puts("\033[2J"); /*Limpia el terminal*/
     for (src=__data; src < (__data + TOTAL_DATA - 1); src+=COLUMNS){
       memcpy(dest, src, COLUMNS);
       /* printf("%s\n", dest); */
       for (i=0; i<COLUMNS; i++){
-	if (dest[i] == BG_CHAR){
-	  printf("\033[0;34;44m%c\033[0m", dest[i]); /* fg:blue(34);bg:blue(44) */
-	}else{
-	  printf("\033[0;30;47m%c\033[0m", dest[i]); /* fg:black(30);bg:white(47)*/
-	}
+      	if (dest[i] == BG_CHAR){
+      	  printf("\033[0;34;44m%c\033[0m", dest[i]); /* fg:azul(34); bg:azul(44) */
+      	}
+        else{
+      	  printf("\033[0;30;47m%c\033[0m", dest[i]); /* fg:negro(30); bg:blanco(47)*/
+      	}
       }
       printf("\n");
     }
   }
 }
-/**
-SCREEN GET: Saca por pantalla prompt>:
-stdin	  | Entrada estándar ==>Descriptor de archivo = 2
-stdout	| Salida estándar ==>Descriptor de archivo = 1
-stderr	| Error típico
-*/
+
+/*
+ * @brief Escribe por pantalla prompt: y coge las columnas al imprimir
+ * @param str, un puntero a char, el string
+ * @return,nada ya que es una función de tipo void
+ */
 void screen_gets(char *str){
   fprintf(stdout, PROMPT);
   if (fgets(str, COLUMNS, stdin))
-    *(str + strlen(str) - 1) = 0; /* Replaces newline character with '\0' */
+    *(str + strlen(str) - 1) = 0; /* Replaza el carácter de nueva línea con '/0' */
 }
 
-/**
-SCREEN AREA CONTRUCTOR: Libera la memoria de la variable "area" con el condicional "area != 0"
-ACCESS(d, x, y) == (d + ((y) * COLUMNS) + (x)) // d ,x , y hacen de "parametros" de la MACRO
-Si la reserva dinamica de memoria de "area" =! 0
-Funciones utilizadas : *memset(void *str, int c, size_t n) copia el caracter c a los primeros n
-caracteres de str /// anchura = width / altura = height .
-*/
-
+/*
+ * @brief Crea memoria dinámica para el area y copia el caracter c a los
+  primeros n caracteres del string
+ * @param x, coordenada cuadrada de un área
+ * @param y, coordenada cuadrada de un área
+ * @param width, la anchura
+ * @param height, la altura
+ * @return area, la estructura
+ */
 Area* screen_area_init(int x, int y, int width, int height){
   int i = 0;
   Area* area = NULL;
 
   if ( (area  = (Area*) malloc (sizeof(struct _Area))) ){
-    *area = (struct _Area) {x, y, width, height, ACCESS(__data, x, y)};  /*XXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+    *area = (struct _Area) {x, y, width, height, ACCESS(__data, x, y)};
 
     for (i=0; i < area->height; i++) /*Si i es menor que la altura  se copia el caracter ' ' que equivale a 32 en ASCII a el string
     que genera ACCESS tantas veces como lo indique la anchura */
-      memset(ACCESS(area->cursor, 0, i), (int) FG_CHAR, (size_t) area->width);/*XXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+      memset(ACCESS(area->cursor, 0, i), (int) FG_CHAR, (size_t) area->width);
   }
 
   return area;
 }
 
-/**
-SCREEN AREA DESTROY: Libera la memoria de la variable area "area != 0"
-*/
-
+/*
+ * @brief Libera memoria almacenada de manera dinamica de area
+ * @param area, la estructura
+ * @return nada, porque es una función de tipo void
+ */
 void screen_area_destroy(Area* area){
   if(area)
     free(area);
 }
 
-/**
-SCREEN AREA CLEAR: Si area != NULL (Si "i" es menor que altura se copia FG_CHAR = ' ' tantas veces como
-width casteando con size_t que es un unsigned integer type de al menos 16 bits) en el array que deja ACCESS
-*/
-
+/*
+ * @brief Borra lo que hay en la pantalla
+ * @param area, la estructura
+ * @return nada, porque es una función de tipo void
+ */
 void screen_area_clear(Area* area){
   int i = 0;
 
@@ -169,33 +177,27 @@ void screen_area_clear(Area* area){
     screen_area_reset_cursor(area);
 
     for (i=0; i < area->height; i++)
-      memset(ACCESS(area->cursor, 0, i), (int) FG_CHAR, (size_t) area->width); 
+      memset(ACCESS(area->cursor, 0, i), (int) FG_CHAR, (size_t) area->width);
   }
 }
 
-/**
-SCREEN AREA RESET CURSOR: Con el condicional "area != 0", el cursor se incluye como tipo del puntero area
-Se sumaria __data con (y * filas(ROWS)) + (x *columnas(COLUMNS)) (reset del cursor )
-*/
-
+/*
+ * @brief Resetea el cursor
+ * @param area, la estructura
+ * @return nada, porque es una función de tipo void
+ */
 void screen_area_reset_cursor(Area* area){
   if (area)
     area->cursor = ACCESS(__data, area->x, area->y);
 }
 
-/**
-SCREEN AREA PUTS: Si la pantalla se va del limite la sube / Se remplazan los caracteres especiales/
-El bucle : Le dice al cursor la anchura con la que tiene que inicializarse y a continuación se encarga de seguirlo
-Teniendo en cuenta que:
-void *memset(void *s, int c, size_t n);
-Copia el valor de c (convertido a unsigned char) en cada uno de los primeros n caracteres en el objeto apuntado por s.
-La función retorna el valor de s.
-/////
-void *memcpy(void *s1, const void *s2, size_t n);
-Copia los primeros n caracteres del objeto apuntado por s2 al objeto apuntado por s1.
-La función retorna el valor de s1. Si al copiar un objeto al otro se superponen, entonces el comportamiento no está definido.
-*/
-
+/*
+ * @brief Si la pantalla se va del limite la sube y se remplazan los caracteres
+    especiales/
+ * @param area, la estructura
+ * @param str, un puntero a char, el string
+ * @return nada, porque es una función de tipo void
+ */
 void screen_area_puts(Area* area, char *str){
   int len = 0;
   char *ptr = NULL;
@@ -205,47 +207,48 @@ void screen_area_puts(Area* area, char *str){
 
   screen_utils_replaces_special_chars(str);
 
+  /*Este bucle, le dice al cursor la anchura con la que tiene que inicializarse
+   y a continuación se encarga de seguirlo*/
   for (ptr = str; ptr < (str + strlen(str)); ptr+=area->width){
     memset(area->cursor, FG_CHAR, area->width);
-    len = (strlen(ptr) < area->width)? strlen(ptr) : area->width; /*variable = condición ? valor si cierto : valor si falso*/
+    /*si el tamano de ptr es menor que la anchura se le asigna la len el tamano
+      de ptr si no se le asigna la anchura*/
+    len = (strlen(ptr) < area->width)? strlen(ptr) : area->width;
     memcpy(area->cursor, ptr, len);
     area->cursor += COLUMNS; /*cursor += height*/
   }
 }
 
-/**
-P.F. SCREEN AREA CURSOR IS OUT OF BOUNDS: Devuelve el atributo cursor cuando se sitúa en la esquina superior derecha (sumando la altura y achura), es decir, cuado se sale de límites
-*/
-
+/*
+ * @brief Devuelve el atributo cursor cuando se sitúa en la esquina superior derecha (sumando la altura y achura), es decir, cuado se sale de límites
+ * @param area, la estructura
+ * @return las coordenadas del cursor, x e y (la altura y anchura)
+ */
 int screen_area_cursor_is_out_of_bounds(Area* area){
-  return area->cursor > ACCESS(__data,
-			       area->x + area->width,
-			       area->y + area->height - 1);
+  return area->cursor > ACCESS(__data,area->x + area->width area->y + area->height - 1);
 }
 
-/**
-P.F. SCREEN AREA SCROLL UP: Esta función es la encargada de sumar en el atributo cursor con un "for", las columnas que tenía, mas las que añade el jugador cada vez que aumenta la altura (height, COLUMNS), con el cursor 
-*/
-
+/*
+ * @brief Subir la pantalla donde se juega
+ * @param area, la estructura
+ * @return nada, ya que es una función de tipo void
+ */
 void screen_area_scroll_up(Area* area){
   for(area->cursor = ACCESS(__data, area->x, area->y);
       area->cursor < ACCESS(__data, area->x + area->width, area->y + area->height - 2);
       area->cursor += COLUMNS){
     memcpy(area->cursor, area->cursor+COLUMNS, area->width);
   }
-}
 
-/**
-P.F. SCREEN UTILS REPLACES SPECIAL CHARS: 
-char *strpbrk(const char *s1, const char *s2); Localiza la primera aparición de la cadena apuntada por s1 de cualquier carácter de la cadena apuntada por s2.
-La función retorna un puntero al carácter, o un puntero nulo si ningún carácter de s2 apareció en s1
-*/
-
+/*
+ * @brief  Reemplaza los caracteres con tilde o la letra 'ñ', por esto: '??'
+ * @param str, un puntero a char, el string
+ * @return nada, ya que es una función de tipo void
+ */
 void screen_utils_replaces_special_chars(char* str){
   char *pch = NULL;
-
-  /* Replaces acutes and tilde with '??' */
+  /*Localiza la primera aparición de la cadena apuntada
+  str de cualquier carácter de la cadena apuntada por "ÁÉÍÓÚÑáéíóúñ".*/
   while ((pch = strpbrk (str, "ÁÉÍÓÚÑáéíóúñ")))
     memcpy(pch, "??", 2);
 }
-
