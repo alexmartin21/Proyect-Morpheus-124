@@ -11,20 +11,24 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+/*Enumeración de cada comando posible*/
 typedef enum enum_Command {
   NO_CMD = -1,
   UNKNOWN, /*0*/
   EXIT, /*1*/
   FOLLOWING, /*etc*/
-  PREVIOUS} T_Command;
-/*Prototipo de funcion de comandos (se declara una variable estructurada  y se le asigna (NO_CMD = -1)
-se inicializa una variable char que tiene de tamano 30 = "" / se inicializa una variable entero
-que obtiene el valor de 0; */
+  PREVIOUS,
+  GET,
+  DROP
+} T_Command;
+
 /**
-* @brief Implementa los comandos, recogiendo el "input"
+* @brief Implementa los comandos, recogiendo el "input" ,
+   transformándolo en un valor numérico de T_command;
 * @param No param.
 * @return cmd (campo de estructura T_command)
 */
 T_Command get_user_input();
 
 #endif
+
