@@ -8,13 +8,14 @@
 *@date 05/02/2018
 *@copyright GNU Public License
 */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "types.h"
 #include "space.h"
 
+/*Estructura que define un espacio (características)*/
 struct _Space {
   Id id;
   char name[WORD_SIZE + 1];
@@ -40,16 +41,20 @@ PREVIOUS = 3 <==command.h
 SCREEN_MAX_STR = 80 <==screen.h
 P.F.: Private Function
 */
-/**
-SPACE_CREATE : CONSTRUCTOR : reserva memoria dinamica para la estructura Space 
-y asigna valores a los campos de la estructura nueva creada (newSpace) retorna el puntero a estructura
-*/
+
+/*
+ * @brief Se encarga de iniciar la estructura de espacio
+   y poner el caracter fin de cadena al final del nombre de este
+ * @param id, de tipo Id
+ * @return newSpace, que es el puntero a la estructura Space
+ */
 Space* space_create(Id id) {
 
   Space *newSpace = NULL;
 
-  if (id == NO_ID)
+  if (id == NO_ID){
     return NULL;
+  }
 
   newSpace = (Space *) malloc(sizeof (Space));
 
@@ -70,11 +75,11 @@ Space* space_create(Id id) {
   return newSpace;
 }
 
-/**
-SPACE_CREATE : DESTRUCTOR : si space == 0 retornara ERROR  liberara memoria y si lo llega a hacer
-devolvera un codigo de estado (OK);
-*/
-
+/*
+ * @brief Libera memoria para space
+ * @param space: puntero a Space.
+ * @return status OK o ERROR.
+ */
 STATUS space_destroy(Space* space) {
   if (!space) {
     return ERROR;
@@ -86,10 +91,12 @@ STATUS space_destroy(Space* space) {
   return OK;
 }
 
-/**
-SPACE SET NAME: Esta función simplemente establece el nombre copiándolo de name a (*space).name, en el caso de que el destino sea NULL, devuelve Error con el condicional
-*/
-
+/*
+ * @brief Pone o cambia el nombre del espacio
+ * @param space: puntero a Space.
+ * @param name: puntero a char.
+ * @return status OK o ERROR.
+ */
 STATUS space_set_name(Space* space, char* name) {
   if (!space || !name) {
     return ERROR;
@@ -102,11 +109,12 @@ STATUS space_set_name(Space* space, char* name) {
   return OK;
 }
 
-/**
-SPACE SET NORTH: Si el espacio es NULL o id == (-1) habrá un error , si no , al espacio norte
-se le asignará el valor de id 
-*/
-
+/*
+ * @brief Pone o cambia el north
+ * @param space: puntero a Space
+ * @param id: campo de Id
+ * @return status OK o ERROR o NO_ID
+ */
 STATUS space_set_north(Space* space, Id id) {
   if (!space || id == NO_ID) {
     return ERROR;
@@ -115,11 +123,12 @@ STATUS space_set_north(Space* space, Id id) {
   return OK;
 }
 
-/**
-SPACE SET SOUTH: Si el espacio es NULL o id == (-1) habrá un error , si no , al espacio sur
-se le asignará el valor de id 
-*/
-
+/*
+ * @brief Pone o cambia el south
+ * @param space: puntero a Space.
+ * @param id: del type Id
+ * @return status OK o ERROR o NO_ID
+ */
 STATUS space_set_south(Space* space, Id id) {
   if (!space || id == NO_ID) {
     return ERROR;
@@ -128,11 +137,12 @@ STATUS space_set_south(Space* space, Id id) {
   return OK;
 }
 
-/**
-SPACE SET EAST:Si el espacio es NULL o id == (-1) habrá un error , si no , al espacio este
-se le asignará el valor de id y retornara el codigo OK
-*/
-
+/*
+ * @brief Pone o cambia el east
+ * @param space: puntero a Space.
+ * @param name: puntero a char.
+ * @return status OK o ERROR o NO_ID
+ */
 STATUS space_set_east(Space* space, Id id) {
   if (!space || id == NO_ID) {
     return ERROR;
@@ -141,11 +151,12 @@ STATUS space_set_east(Space* space, Id id) {
   return OK;
 }
 
-/**
-SPACE SET WEST: Si el espacio es NULL o id == (-1) habrá un error , si no , al espacio oeste
-se le asignará el valor de id y retornara el codigo OK
-*/
-
+/*
+ * @brief Pone o cambia el west
+ * @param space: puntero a Space.
+ * @param id: del type Id
+ * @return status OK o ERROR o NO_ID
+ */
 STATUS space_set_west(Space* space, Id id) {
   if (!space || id == NO_ID) {
     return ERROR;
@@ -154,10 +165,13 @@ STATUS space_set_west(Space* space, Id id) {
   return OK;
 }
 
-/**
-SPACE SET OBJECT: Se encarga de establecer el espacio objeto, asignándolo a value y devolviendo el error si lo hubiera, es decir, si no existiera space
-*/
-
+/*
+ * @brief Pone o cambia el espacio del objeto(casilla)
+ * @param space: puntero a Space.
+ * @param value: (False : si hay casilla sin espacio),
+    True : si hay casilla con space
+ * @return status OK o ERROR.
+ */
 STATUS space_set_object(Space* space, BOOL value) {
   if (!space) {
     return ERROR;
@@ -165,19 +179,24 @@ STATUS space_set_object(Space* space, BOOL value) {
   space->object = value;
   return OK;
 }
-/**
-SPACE GET NAME: Si el espacio == 0 retorna NULL si no retorna el nombre del espacio (Space->name)
-*/
 
+/*
+ * @brief Devuelve el nombre (casilla)
+ * @param space: puntero a Space.
+ * @return name, el name space->name o NULL
+ */
 const char * space_get_name(Space* space) {
   if (!space) {
     return NULL;
   }
   return space->name;
 }
-/**
-SPACE GET ID: Si el espacio == 0 retorna (-1) si no retorna el nombre del espacio (Space->id)
-*/
+
+/*
+ * @brief Devuelve el id (casilla)
+ * @param space: puntero a Space.
+ * @return id, el id space->id o NO_ID
+ */
 Id space_get_id(Space* space) {
   if (!space) {
     return NO_ID;
@@ -185,10 +204,11 @@ Id space_get_id(Space* space) {
   return space->id;
 }
 
-/**
-SPACE SET NORTH: Si el espacio ==0 retornara (-1) si no retornara espace->north
-*/
-
+/*
+ * @brief Devuelve el id de la casilla del norte
+ * @param space: puntero a Space.
+ * @return norte, space->north o NO_ID
+ */
 Id space_get_north(Space* space) {
   if (!space) {
     return NO_ID;
@@ -196,10 +216,11 @@ Id space_get_north(Space* space) {
   return space->north;
 }
 
-/**
-SPACE SET SOUTH:Si el espacio ==0 retornara (-1) si no retornara espace->south
-*/
-
+/*
+ * @brief Devuelve el id de la casilla del sur
+ * @param space: puntero a Space.
+ * @return south, space->south o NO_ID
+ */
 Id space_get_south(Space* space) {
   if (!space) {
     return NO_ID;
@@ -207,10 +228,7 @@ Id space_get_south(Space* space) {
   return space->south;
 }
 
-/**
-SPACE GET EAST:Si el espacio ==0 retornara (-1) si no retornara espace->east
-*/
-
+c
 Id space_get_east(Space* space) {
   if (!space) {
     return NO_ID;
@@ -218,10 +236,11 @@ Id space_get_east(Space* space) {
   return space->east;
 }
 
-/**
-SPACE GET WEST:Si el espacio ==0 retornara (-1) si no retornara espace->west
-*/
-
+/*
+ * @brief Devuelve el id de la casilla del oeste
+ * @param space: puntero a Space.
+ * @return west, space->west o NO_ID
+ */
 Id space_get_west(Space* space) {
   if (!space) {
     return NO_ID;
@@ -229,10 +248,11 @@ Id space_get_west(Space* space) {
   return space->west;
 }
 
-/**
-SPACE GET OBJECT: Esta función es similar a space_set_object pero en vez de asginar a value, devuelve el atributo objeto, y False, si no existiera space 
-*/
-
+/*
+ * @brief Devuelve el si hay o no objeto en la casilla
+ * @param space: puntero a Space.
+ * @return object, space->object o FALSE
+ */
 BOOL space_get_object(Space* space) {
   if (!space) {
     return FALSE;
@@ -240,13 +260,11 @@ BOOL space_get_object(Space* space) {
   return space->object;
 }
 
-/**
-SPACE PRINT: /Si space ==0 devuelve ERROR / pone por pantalla el espacio inicial (con Id y Name) / 
-/Si idaux no esta vacio tras hacer llamadas a space_get_x (x: funcionalidades: N, S, E, W, O) se imprimira por pantallla que el link (conexion)
-esta habilitada con el codigo idaux (declarado dentro de la funcion) si idaux = NO_ID (-1) imprime 
-que no hay conexion./ Tambien lo hace con space_get_object transimitiendo si hay o no objeto en el espacio.
-*/
-
+/*
+ * @brief Muestra por la pantalla de salida, tanto el id, como el nombre del espacio
+ * @param space: puntero a Space.
+ * @return status, OK o ERROR o NO_ID
+ */
 STATUS space_print(Space* space) {
   Id idaux = NO_ID;
 
@@ -292,6 +310,3 @@ STATUS space_print(Space* space) {
 
   return OK;
 }
-
-
-
