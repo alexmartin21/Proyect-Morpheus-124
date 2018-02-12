@@ -13,63 +13,79 @@
 #define OBJECT_H
 #include "types.h"
 
+/*Estructura que define un objeto(características)*/
 typedef struct _Object Object; /*NUEVA / ANTIGUA*/
 
-/**
-OBJECT CREATE : CONSTRUCTOR : si objeto == 0 retornara ERROR  guardara memoria dinamica
-y asigna valores a los campos de la estructura nueva creada (newObject) retorna el puntero a estructura
-*/
+/*
+ * @brief Se encarga de crear el objeto,
+   y poner el caracter fin de cadena al final del nombre de este
+ * @param id, de tipo Id
+ * @return newObject, que es el puntero a la estructura
+ */
 Object* object_create (Id id);
-/**
-OBJECT CREATE : DESTRUCTOR : si objeto == 0 retornara ERROR  liberara memoria y si lo llega a hacer
-devolvera un codigo de estado (OK);
-*/
+/*
+ * @brief Libera memoria para objeto.
+ * @param objeto: puntero a Objeto.
+ * @return status OK o ERROR.
+ */
 STATUS object_destroy (Object);
-/**
-OBJECT SET NAME: Esta función simplemente establece el nombre copiándolo de name a (*space).name, en el caso de que el destino sea NULL, devuelve Error con el condicional
-*/
+/*
+ * @brief Pone o cambia el nombre del objeto
+ * @param objeto: puntero a Objeto.
+ * @param name: puntero a char.
+ * @return status OK o ERROR.
+ */
 STATUS object_set_name (Object* , char* name);
-/**
-OBJECT GET NAME: Si el objeto == 0 retorna NULL si no retorna el nombre del objeto (Object->objeto)
-*/
+/*
+ * @brief Devuelve el nombre asignado a un objeto
+ * @param objeto: puntero a Objeto.
+ * @return name, el nombre que asignamos al objeto
+ */
 const char * object_get_name(Object* object)
-/**
-OBJECT SET WEAPON: Si el objeto es NULL o id == (-1) habrá un error , si no , al objeto arma
-se le asignará el valor de id
-*/
+/*
+ * @brief Pone o cambia el arma
+ * @param objeto: puntero a Objeto.
+ * @param id: del type Id
+ * @return status OK o ERROR.
+ */
 STATUS object_set_weapon(Object* object, Id id);
-/**
-OBJECT SET TOOL: Si el objeto es NULL o id == (-1) habrá un error , si no , al objeto util
-se le asignará el valor de id
-*/
+/*
+ * @brief Pone o cambia el tool
+ * @param objeto: puntero a Objeto.
+ * @param id: del type Id
+ * @return status OK o ERROR.
+ */
 STATUS object_set_tool(Object* object, Id id);
-/**
-OBJECT SET KEY: Si el objeto es NULL o id == (-1) habrá un error , si no , al objeto llave
-se le asignará el valor de id
-*/
+/*
+ * @brief Pone o cambia la llave
+ * @param objeto: puntero a Objeto.
+ * @param id: del type Id
+ * @return status OK o ERROR.
+ */
 STATUS object_set_key(Object* object, Id id);
-/**
-OBJECT GET WEAPON: Si el objeto == 0 retorna (-1) si no retorna el id del objeto (Object->id)
-*/
+/*
+ * @brief Devuelve el arma
+ * @param objeto: puntero a Objeto.
+ * @return arma, el arma
+ */
 Id object_get_weapon(Object* objeto);
-/**
-OBJECT GET TOOL: Si el objeto == 0 retorna (-1) si no retorna el id del objeto (Object->id)
-*/
+/*
+ * @brief Devuelve la herramienta
+ * @param objeto: puntero a Objeto.
+ * @return tool, el nombre que asignamos a la herramienta
+ */
 Id object_get_tool(Object* objeto);
-/**
-OBJECT GET KEY: Si el objeto == 0 retorna (-1) si no retorna el id del objeto (Object->id)
-*/
+/*
+ * @brief Devuelve la llave
+ * @param objeto: puntero a Objeto.
+ * @return llave, la llave
+ */
 Id object_get_key(Object* objeto);
-/**
-OBJECT PRINT: /Si objeto ==0 devuelve ERROR / pone por pantalla el objeto inicial (con Id y Name) /
-/Si idaux no esta vacio tras hacer llamadas a object_get_x (x: funcionalidades: N, S, E, W, O) se imprimira por pantallla que el link (conexion)
-esta habilitada con el codigo idaux (declarado dentro de la funcion) si idaux = NO_ID (-1) imprime
-que no hay conexion./ Tambien lo hace con object_get_object transimitiendo si hay o no objeto en el espacio.
-RESUMIENDO: Control de errores Debugging.
-*/
-/**
-COMENTARIO ALTERNATIVO ==> OBJECT PRINT: Control de errores Debugging
-*/
+/*
+ * @brief Muestra por la pantalla de salida, tanto el id, como el nombre del objeto
+ * @param objeto: puntero a Objeto.
+ * @return status, OK o ERROR
+ */
 STATUS object_print(Object* object);
 
 #endif
